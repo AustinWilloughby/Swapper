@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class DotData : MonoBehaviour
 {
-    private DotData upperNeighbor;
-    private DotData rightNeighbor;
-    private DotData leftNeighbor;
-    private DotData lowerNeighbor;
+    public DotData upperNeighbor;
+    public DotData rightNeighbor;
+    public DotData leftNeighbor;
+    public DotData lowerNeighbor;
 
     private Color color;
     private int xLoc;
@@ -19,10 +19,12 @@ public class DotData : MonoBehaviour
     public float slideSpeed = 1;
     public float marginOfSlideError = .04f;
 
+    private ClickHandler cHandler;
+
     // Use this for initialization
     void Start()
     {
-
+        cHandler = GameObject.Find("ClickHandler").GetComponent<ClickHandler>();
     }
 
     // Update is called once per frame
@@ -41,7 +43,7 @@ public class DotData : MonoBehaviour
 
     void OnMouseDown()
     {
-        Slide(Directions.Up);
+        cHandler.ResolveClick(this);
     }
 
     public void Setup(Color col, DotData upper, DotData lower, DotData right, DotData left, int x, int y)
@@ -56,7 +58,7 @@ public class DotData : MonoBehaviour
         yLoc = y;
     }
 
-    private bool Slide(Directions direc)
+    public bool Slide(Directions direc)
     {
         sliding = false;
         switch (direc)
@@ -95,12 +97,91 @@ public class DotData : MonoBehaviour
         slideDirection.Normalize();
         return sliding;
     }
+
+    public void SwapNeighbors(Directions swapDirection, DotData otherSwap)
+    {
+        switch (swapDirection)
+        {
+            case Directions.Up:
+                upperNeighbor = otherSwap.upperNeighbor;
+                rightNeighbor = otherSwap.rightNeighbor;
+                leftNeighbor = otherSwap.leftNeighbor;
+                lowerNeighbor = otherSwap;
+
+                otherSwap.upperNeighbor.lowerNeighbor = this;
+                otherSwap.rightNeighbor.leftNeighbor = this;
+                otherSwap.leftNeighbor.rightNeighbor = this;
+                //otherSwap.upperNeighbor = this;
+                break;
+            case Directions.Down:
+                lowerNeighbor = otherSwap.lowerNeighbor;
+                rightNeighbor = otherSwap.rightNeighbor;
+                leftNeighbor = otherSwap.leftNeighbor;
+                upperNeighbor = otherSwap;
+
+                otherSwap.lowerNeighbor.upperNeighbor = this;
+                otherSwap.rightNeighbor.leftNeighbor = this;
+                otherSwap.leftNeighbor.rightNeighbor = this;
+                //otherSwap.lowerNeighbor = this;
+                break;
+            case Directions.Left:
+                upperNeighbor = otherSwap.upperNeighbor;
+                lowerNeighbor = otherSwap.lowerNeighbor;
+                leftNeighbor = otherSwap.leftNeighbor;
+                rightNeighbor = otherSwap;
+
+                otherSwap.upperNeighbor.lowerNeighbor = this;
+                otherSwap.lowerNeighbor.upperNeighbor = this;
+                otherSwap.leftNeighbor.rightNeighbor = this;
+                //otherSwap.upperNeighbor = this;
+                break;
+            case Directions.Right:
+                upperNeighbor = otherSwap.upperNeighbor;
+                rightNeighbor = otherSwap.rightNeighbor;
+                lowerNeighbor = otherSwap.lowerNeighbor;
+                leftNeighbor = otherSwap;
+
+                otherSwap.upperNeighbor.lowerNeighbor = this;
+                otherSwap.lowerNeighbor.upperNeighbor = this;
+                otherSwap.rightNeighbor.leftNeighbor = this;
+                //otherSwap.upperNeighbor = this;
+                break;
+            default: break;
+        }
+    }
+
+    public Directions IsNeighbor(DotData other)
+    {
+        if(other == upperNeighbor)
+        {
+            return Directions.Up;
+        }
+        else if(other == lowerNeighbor)
+        {
+            return Directions.Down;
+        }
+        else if(other == leftNeighbor)
+        {
+            return Directions.Left;
+        }
+        else if(other == rightNeighbor)
+        {
+            return Directions.Right;
+        }
+        else
+        {
+            return Directions.NaN;
+        }
+    }
+
+
 }
 
-enum Directions
+public enum Directions
 {
     Up,
     Down,
     Left,
-    Right
+    Right,
+    NaN
 };
