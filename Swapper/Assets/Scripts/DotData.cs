@@ -10,6 +10,7 @@ public class DotData : MonoBehaviour
     public DotData lowerNeighbor;
 
     private Color color;
+    private Color nextColor;
     private int xLoc;
     private int yLoc;
 
@@ -20,6 +21,12 @@ public class DotData : MonoBehaviour
     public float marginOfSlideError = .04f;
 
     private ClickHandler cHandler;
+
+
+    public Color Color
+    {
+        get { return color; }
+    }
 
     // Use this for initialization
     void Start()
@@ -35,8 +42,10 @@ public class DotData : MonoBehaviour
             transform.position += (Vector3)slideDirection * slideSpeed * Time.deltaTime;
             if(Vector2.Distance(transform.position, slideDestination) <= marginOfSlideError)
             {
-                transform.position = slideDestination;
+                transform.position = GameObject.Find("GameManager").GetComponent<GridController>().GetPositionAtLoc(xLoc, yLoc);
                 sliding = false;
+                color = nextColor;
+                gameObject.GetComponent<SpriteRenderer>().color = color;
             }
         }
     }
@@ -67,6 +76,7 @@ public class DotData : MonoBehaviour
                 if (upperNeighbor)
                 {
                     slideDestination = upperNeighbor.gameObject.transform.position;
+                    nextColor = upperNeighbor.Color;
                     sliding = true;
                 }
                 break;
@@ -74,6 +84,7 @@ public class DotData : MonoBehaviour
                 if (lowerNeighbor)
                 {
                     slideDestination = lowerNeighbor.gameObject.transform.position;
+                    nextColor = lowerNeighbor.Color;
                     sliding = true;
                 }
                 break;
@@ -81,6 +92,7 @@ public class DotData : MonoBehaviour
                 if (leftNeighbor)
                 {
                     slideDestination = leftNeighbor.gameObject.transform.position;
+                    nextColor = leftNeighbor.Color;
                     sliding = true;
                 }
                 break;
@@ -88,6 +100,7 @@ public class DotData : MonoBehaviour
                 if (rightNeighbor)
                 {
                     slideDestination = rightNeighbor.gameObject.transform.position;
+                    nextColor = rightNeighbor.Color;
                     sliding = true;
                 }
                 break;
@@ -98,57 +111,6 @@ public class DotData : MonoBehaviour
         return sliding;
     }
 
-    public void SwapNeighbors(Directions swapDirection, DotData otherSwap)
-    {
-        switch (swapDirection)
-        {
-            case Directions.Up:
-                upperNeighbor = otherSwap.upperNeighbor;
-                rightNeighbor = otherSwap.rightNeighbor;
-                leftNeighbor = otherSwap.leftNeighbor;
-                lowerNeighbor = otherSwap;
-
-                otherSwap.upperNeighbor.lowerNeighbor = this;
-                otherSwap.rightNeighbor.leftNeighbor = this;
-                otherSwap.leftNeighbor.rightNeighbor = this;
-                //otherSwap.upperNeighbor = this;
-                break;
-            case Directions.Down:
-                lowerNeighbor = otherSwap.lowerNeighbor;
-                rightNeighbor = otherSwap.rightNeighbor;
-                leftNeighbor = otherSwap.leftNeighbor;
-                upperNeighbor = otherSwap;
-
-                otherSwap.lowerNeighbor.upperNeighbor = this;
-                otherSwap.rightNeighbor.leftNeighbor = this;
-                otherSwap.leftNeighbor.rightNeighbor = this;
-                //otherSwap.lowerNeighbor = this;
-                break;
-            case Directions.Left:
-                upperNeighbor = otherSwap.upperNeighbor;
-                lowerNeighbor = otherSwap.lowerNeighbor;
-                leftNeighbor = otherSwap.leftNeighbor;
-                rightNeighbor = otherSwap;
-
-                otherSwap.upperNeighbor.lowerNeighbor = this;
-                otherSwap.lowerNeighbor.upperNeighbor = this;
-                otherSwap.leftNeighbor.rightNeighbor = this;
-                //otherSwap.upperNeighbor = this;
-                break;
-            case Directions.Right:
-                upperNeighbor = otherSwap.upperNeighbor;
-                rightNeighbor = otherSwap.rightNeighbor;
-                lowerNeighbor = otherSwap.lowerNeighbor;
-                leftNeighbor = otherSwap;
-
-                otherSwap.upperNeighbor.lowerNeighbor = this;
-                otherSwap.lowerNeighbor.upperNeighbor = this;
-                otherSwap.rightNeighbor.leftNeighbor = this;
-                //otherSwap.upperNeighbor = this;
-                break;
-            default: break;
-        }
-    }
 
     public Directions IsNeighbor(DotData other)
     {

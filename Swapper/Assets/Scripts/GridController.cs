@@ -50,12 +50,24 @@ public class GridController : MonoBehaviour
         {
             for(int x = 0; x < width; x++)
             {
-                objects[x, y].GetComponent<DotData>().Setup(Color.red,
-                    GetDotDataAtLoc(x, y + 1),
-                    GetDotDataAtLoc(x, y - 1),
-                    GetDotDataAtLoc(x + 1, y),
-                    GetDotDataAtLoc(x - 1, y),
-                    x, y);
+                if (x > y)
+                {
+                    objects[x, y].GetComponent<DotData>().Setup(Color.green,
+                                        GetDotDataAtLoc(x, y + 1),
+                                        GetDotDataAtLoc(x, y - 1),
+                                        GetDotDataAtLoc(x + 1, y),
+                                        GetDotDataAtLoc(x - 1, y),
+                                        x, y);
+                }
+                else
+                {
+                    objects[x, y].GetComponent<DotData>().Setup(Color.red,
+                        GetDotDataAtLoc(x, y + 1),
+                        GetDotDataAtLoc(x, y - 1),
+                        GetDotDataAtLoc(x + 1, y),
+                        GetDotDataAtLoc(x - 1, y),
+                        x, y);
+                }
             }
         }
     }
@@ -73,5 +85,10 @@ public class GridController : MonoBehaviour
             return null;
         }
         return objects[xLoc, yLoc].GetComponent<DotData>();
+    }
+
+    public Vector2 GetPositionAtLoc(int xLoc, int yLoc)
+    {
+        return positions[xLoc, yLoc];
     }
 }
