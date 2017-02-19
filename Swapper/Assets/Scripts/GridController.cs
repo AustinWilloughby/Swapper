@@ -17,8 +17,47 @@ public class GridController : MonoBehaviour
     void Start()
     {
         gameCam = GameObject.Find("Main Camera").GetComponent<Camera>();
-        CreateEmptyGrid();
-        PopulateGrid();
+        positions = new Vector2[width, height];
+        objects = new GameObject[width, height];
+
+        Vector2 prefabHalfwidth = dotPrefab.GetComponent<BoxCollider2D>().size;
+        Vector2 startingPos = new Vector2(
+            gameCam.transform.position.x - gameCam.orthographicSize, 
+            gameCam.transform.position.y - gameCam.orthographicSize);
+
+        float distBetween = (gameCam.orthographicSize * 2.0f / (float)height);
+        Vector2 colliderScales = new Vector2(10.0f / (float)height, 10.0f / (float)height);
+
+        float xOffset = 5.0f / (float)width;
+        float yOffset = 5.0f / (float)height;
+
+
+        for (int y = 0; y < height; y++)
+        {
+            for(int x = 0; x < width; x++)
+            {
+                positions[x, y] = new Vector2(
+                    (startingPos.x + distBetween * x) + xOffset,
+                    (startingPos.y + distBetween * y) + yOffset);
+                GameObject newDot = Instantiate(dotPrefab);
+                newDot.transform.position = positions[x, y];
+                newDot.GetComponent<BoxCollider2D>().size = colliderScales;
+                objects[x, y] = newDot;
+            }
+        }
+
+        for(int y = 0; y < height; y++)
+        {
+            for(int x = 0; x < width; x++)
+            {
+                objects[x, y].GetComponent<DotData>().Setup(Color.red,
+                    GetDotDataAtLoc(x, y + 1),
+                    GetDotDataAtLoc(x, y - 1),
+                    GetDotDataAtLoc(x + 1, y),
+                    GetDotDataAtLoc(x - 1, y),
+                    x, y);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -27,44 +66,12 @@ public class GridController : MonoBehaviour
 
     }
 
-    private void CreateEmptyGrid()
+    public DotData GetDotDataAtLoc(int xLoc, int yLoc)
     {
-        Vector2 camVec = gameCam.gameObject.transform.position;
-        Vector2 startVec = new Vector2(camVec.x - gameCam.orthographicSize, camVec.y - gameCam.orthographicSize);
-
-        float cellScale;
-        if (height > width)
+        if(xLoc >= width || xLoc < 0 || yLoc >= height || yLoc < 0)
         {
-            cellScale = (gameCam.orthographicSize * 2) / height;
+            return null;
         }
-        else
-        {
-            cellScale = (gameCam.orthographicSize * 2) / width;
-        }
-
-        positions = new Vector2[width, height];
-        objects = new GameObject[width, height];
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                positions[x, y] = new Vector2(startVec.x + (cellScale * x), startVec.y + (cellScale * y));
-            }
-        }
-    }
-
-    private void PopulateGrid()
-    {
-        for(int y = 0; y < height; y++)
-        {
-            for(int x = 0; x < width; x++)
-            {
-                GameObject newPref = Instantiate(dotPrefab);
-                newPref.transform.position = positions[x, y];
-                newPref.transform.position += newPref.GetComponent<SpriteRenderer>().bounds.size / 2;
-                objects[x, y] = newPref;
-            }
-        }
+        return objects[xLoc, yLoc].GetComponent<DotData>();
     }
 }
