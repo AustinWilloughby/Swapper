@@ -118,8 +118,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2f61689ff0844b4dace51cb3441a5f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 4
-  height: 4
+  width: 2
+  height: 2
+  axisOfDivision: {x: 0, y: 1}
   dotPrefab: {fileID: 1326414521073566, guid: a8680af667726a44ea9b54937bc21dad, type: 2}
 --- !u!4 &365190367
 Transform:

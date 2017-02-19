@@ -6,6 +6,7 @@ public class GridController : MonoBehaviour
 {
     public int width = 5;
     public int height = 5;
+    public Vector2 axisOfDivision;
 
     public GameObject dotPrefab;
 
@@ -50,7 +51,7 @@ public class GridController : MonoBehaviour
         {
             for(int x = 0; x < width; x++)
             {
-                if (x > y)
+                if (x >= axisOfDivision.x && y >= axisOfDivision.y)
                 {
                     objects[x, y].GetComponent<DotData>().Setup(Color.green,
                                         GetDotDataAtLoc(x, y + 1),
@@ -90,5 +91,10 @@ public class GridController : MonoBehaviour
     public Vector2 GetPositionAtLoc(int xLoc, int yLoc)
     {
         return positions[xLoc, yLoc];
+    }
+
+    public void EvaluateGrid()
+    {
+
     }
 }

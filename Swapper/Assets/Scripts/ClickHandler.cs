@@ -24,7 +24,6 @@ public class ClickHandler : MonoBehaviour
         {
             if (clicked != prevClicked)
             {
-                DotData swap = clicked;
                 switch (prevClicked.IsNeighbor(clicked))
                 {
                     case Directions.Up:
