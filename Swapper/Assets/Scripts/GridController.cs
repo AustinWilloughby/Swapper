@@ -53,6 +53,10 @@ public class GridController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
         if (gameOver)
         {
             alphaValue += Time.deltaTime;
