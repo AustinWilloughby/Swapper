@@ -14,6 +14,11 @@ public class DotData : MonoBehaviour
     private int xLoc;
     private int yLoc;
 
+    private Vector3 dotScale;
+    public float dotScaleMod;
+    private BoxCollider2D col;
+    private Vector2 colScale;
+
     private bool sliding = false;
     private Vector2 slideDestination;
     private Vector2 slideDirection;
@@ -22,15 +27,32 @@ public class DotData : MonoBehaviour
 
     private ClickHandler cHandler;
 
+    public Vector2 GridPos
+    {
+        get { return new Vector2(xLoc, yLoc);}
+    }
+
 
     public Color Color
     {
         get { return color; }
     }
+    public Color NextColor
+    {
+        get { return nextColor; }
+    }
+
+    public bool IsSliding
+    {
+        get { return sliding; }
+    }
 
     // Use this for initialization
     void Start()
     {
+        dotScale = transform.localScale;
+        col = gameObject.GetComponent<BoxCollider2D>();
+        colScale = col.size;
         cHandler = GameObject.Find("ClickHandler").GetComponent<ClickHandler>();
     }
 
@@ -46,6 +68,32 @@ public class DotData : MonoBehaviour
                 sliding = false;
                 color = nextColor;
                 gameObject.GetComponent<SpriteRenderer>().color = color;
+
+                GridController gridCont = GameObject.Find("GameManager").GetComponent<GridController>();
+                gridCont.EvaluateGrid();
+            }
+        }
+
+        if(transform.localScale != dotScale * dotScaleMod)
+        {
+            if (Vector3.Magnitude(transform.localScale) < Vector3.Magnitude(dotScale * dotScaleMod))
+            {
+                transform.localScale += new Vector3(dotScaleMod, dotScaleMod, dotScaleMod) * Time.deltaTime * dotScaleMod;
+                col.size = new Vector2(colScale.x / transform.localScale.x, colScale.y / transform.localScale.y);
+                if (Vector3.Magnitude(transform.localScale) > Vector3.Magnitude(dotScale * dotScaleMod))
+                {
+                    transform.localScale = dotScale * dotScaleMod;
+                }
+            }
+
+            if (Vector3.Magnitude(transform.localScale) > Vector3.Magnitude(dotScale * dotScaleMod))
+            {
+                transform.localScale -= new Vector3(dotScaleMod, dotScaleMod, dotScaleMod) * Time.deltaTime * dotScaleMod * 2;
+                col.size = new Vector2(colScale.x / transform.localScale.x, colScale.y / transform.localScale.y);
+                if (Vector3.Magnitude(transform.localScale) < Vector3.Magnitude(dotScale * dotScaleMod))
+                {
+                    transform.localScale = dotScale * dotScaleMod;
+                }
             }
         }
     }
